@@ -1,17 +1,13 @@
 <?php
 include_once 'Error.php';
+include_once 'local_settings.php';
 
 class DbConnection
 {
-	//const DBNAME = "1570618_story";
-	//const HOSTNAME = "fdb3.awardspace.net";
-	//const USERNAME = "1570618_story";
-	//const PASSWORD = "aqswdefr1";
-	
-	const DBNAME = "story";
-	const HOSTNAME = "localhost";
-	const USERNAME = "shahaf";
-	const PASSWORD = "";
+	const DBNAME = DBNAME;
+	const HOSTNAME = DBHOSTNAME;
+	const USERNAME = DBUSERNAME;
+	const PASSWORD = DBPASSWORD;
 	
 	protected static $DB = null;
 	protected $Error = 0;

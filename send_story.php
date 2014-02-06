@@ -5,12 +5,12 @@ include_once 'classes/InputCheck.php';
 
 function getUserName()
 {
-	return $_POST['username'];
+	return $_GET['username'];
 }
 
 function getPassword()
 {
-	return $_POST['password'];
+	return $_GET['password'];
 }
 
 // Script starts here
@@ -68,7 +68,7 @@ if (!$result)
 	exitError();
 }
 
-header(':', true, STATUS_XML_OK);
+setStatus(STATUS_XML_OK);
 
 // output the story xml file
 echo $xmlObj->asXml();

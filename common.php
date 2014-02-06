@@ -1,10 +1,12 @@
 <?php
-define ('STATUS_XML_OK', 300);
-define ('STATUS_NO_STORY_AVAILABLE', 301);
-define ('STATUS_RESPONSE_OK', 302);
-define ('STATUS_ERROR', 303);
-define ('STATUS_ERROR_CREDENTIALS',	307);
-define ('STORIES_DIR_PATH', $_SERVER['DOCUMENT_ROOT'] . '/TellATale/stories/');
+include_once 'local_settings.php';
+
+define ('STATUS_XML_OK', 1);
+define ('STATUS_NO_STORY_AVAILABLE', 2);
+define ('STATUS_RESPONSE_OK', 3);
+define ('STATUS_ERROR', 4);
+define ('STATUS_ERROR_CREDENTIALS',	5);
+define ('STORIES_DIR_PATH', $_SERVER['DOCUMENT_ROOT'] . ROOT_DIR . 'stories/');
 define ('XML_PREFIX', "<?xml version='1.0' encoding='UTF-8' standalone='yes'?>");
 
 include_once 'classes/StoryTable.php';
@@ -21,16 +23,21 @@ function exitError($code)
 {
 	if (!isset($code))
 	{
-		header(':', true, STATUS_ERROR);
+		setStatus(STATUS_ERROR);
 	}
 	else
 	{
-		header(':', true, $code);
+		setStatus($code);
 	}
 	
 	// close connection to database
 	DbConnection::closeDB();
 	exit();
+}
+
+function setStatus($code)
+{
+	header('status_code: ' . $code);
 }
 
 /**

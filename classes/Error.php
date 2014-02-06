@@ -1,5 +1,7 @@
 <?php
-define ('ERRLOGFILE',	$_SERVER['DOCUMENT_ROOT'] . '/logs/myError.log');
+include_once 'local_settings.php';
+define ('ERRLOGFILE',	$_SERVER['DOCUMENT_ROOT'] . ROOT_DIR . '/logs/myError.log');
+
 class Error
 {
 	public static function printToUser($msg)
