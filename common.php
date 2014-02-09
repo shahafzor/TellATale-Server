@@ -6,6 +6,7 @@ define ('STATUS_NO_STORY_AVAILABLE', 2);
 define ('STATUS_RESPONSE_OK', 3);
 define ('STATUS_ERROR', 4);
 define ('STATUS_ERROR_CREDENTIALS',	5);
+define ('STATUS_ILEGAL_SEGMENT',	6);
 define ('STORIES_DIR_PATH', $_SERVER['DOCUMENT_ROOT'] . ROOT_DIR . 'stories/');
 define ('XML_PREFIX', "<?xml version='1.0' encoding='UTF-8' standalone='yes'?>");
 

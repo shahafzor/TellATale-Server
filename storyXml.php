@@ -12,6 +12,7 @@ function incDislikes($xmlFile, $seqNumber)
 
 function drop($xmlFile, $seqNumber, $version)
 {
+	$status = 0;
 	foreach ($xmlFile->story_segment as $segment)
 	{
 		if ((int)$segment->seq_number == ((int)$seqNumber - 1))
@@ -20,8 +21,17 @@ function drop($xmlFile, $seqNumber, $version)
 			{
 				$segment->addChild('dropped');
 			}
+			elseif ($status == 0)
+			{
+				$status = 1;
+			}
+			else
+			{
+				$status = 0;
+			}
 		}
 	}
+	return $status;
 }
 
 function addSegment($xmlFile, $xmlObj)
@@ -39,7 +49,7 @@ function saveXmlFile($xmlObj, $storyName)
 	$result = $xmlObj->asXML(STORIES_DIR_PATH . "$storyName.xml");
 	if (!$result)
 	{
-		$logMsg = __FILE__ . " line " . __LINE__  . ": " . "xmlObj->asXML(" . STORIES_DIR_PATH . "'$name.xml') error";
+		$logMsg = __FILE__ . " line " . __LINE__  . ": " . "xmlObj->asXML(" . STORIES_DIR_PATH . "'$storyName.xml') error";
 		Error::printToLog(ERRLOGFILE, -1, $logMsg);
 	}
 	return $result;
@@ -59,5 +69,36 @@ function removeFile($storyName)
 function getXmlFileName($storyName)
 {
 	return STORIES_DIR_PATH . "$storyName.xml";
+}
+
+function getLastSeqNum($xmlFile)
+{
+	return (int)$xmlFile->story_segment[count($xmlFile) - 1]->seq_number;
+}
+
+function getNextSeqNum($xmlFile)
+{
+	return getLastSeqNum($xmlFile) + 1;
+}
+
+function getLastVersion($xmlFile)
+{
+	return (int)$xmlFile->story_segment[count($xmlFile) - 1]->version;
+}
+
+function getNextVersion($xmlFile)
+{
+	return getLastVersion($xmlFile) + 1;
+}
+
+function isLegalParallel($xmlObj, $xmlFile)
+{
+	return ((int)$xmlObj->story_segment->seq_number == getLastSeqNum($xmlFile) and
+			(int)$xmlObj->story_segment->version == getNextVersion($xmlFile));
+}
+
+function isLegalSegment($xmlObj, $xmlFile)
+{
+	return ((int)$xmlObj->story_segment->seq_number == getNextSeqNum($xmlFile));
 }
 ?>

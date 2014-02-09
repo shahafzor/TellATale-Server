@@ -111,22 +111,40 @@ else
 	}
 	
 	//TODO
-	// - check that the segment's seq number is legal
-	// - check the status of the story
-	// - check the user is correct
-	// - user input validation
+	// ? check the status of the story is STORY_UNAVAILABLE
+	// ? check the user is the current owner of the story
+	// ? story input validation
 	// - test file/database error
 	
 	// the segment is a new version of the last segment
 	if ($xmlObj->story_segment->parallel)
 	{
+		// check seq==seq and ver==ver+1
+		if (!isLegalParallel($xmlObj, $xmlFile))
+		{
+			exitError(STATUS_ILEGAL_SEGMENT);
+		}
+		
 		incDislikes($xmlFile, $xmlObj->story_segment->seq_number);
 	}
 	// need to drop all the versions that were not chosen
-	elseif ($xmlObj->story_segment->need_drop)
+	else
 	{
-		drop($xmlFile, $xmlObj->story_segment->seq_number, $xmlObj->story_segment->version);
+		// check seq==seq+1
+		if (!isLegalSegment($xmlObj, $xmlFile))
+		{
+			exitError(STATUS_ILEGAL_SEGMENT);
+		}
+		
+		// drop and check ver==some ver
+		if (!drop($xmlFile, $xmlObj->story_segment->seq_number, $xmlObj->story_segment->version))
+		{
+			exitError(STATUS_ILEGAL_SEGMENT);
+		}
+		
+		//if ($xmlObj->story_segment->need_drop){}
 	}
+		
 	
 	// add the received segment to the xml object
 	addSegment($xmlFile, $xmlObj);
