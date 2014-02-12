@@ -36,19 +36,19 @@ class StoryTable extends DbConnection
 		return $this->getStory($query);
 	}
 	
-	// TODO: make the function better
 	public function getNextAvailableStory($storyId, $userId)
 	{
-		$query = "select id from Stories where
+		$query = "select id from (select id from Stories where
 				id > $storyId and
 				status = " . STORY_AVAILABLE . " and 
 				user != $userId
+				order by id asc) as t1
 				union
-				select id from Stories where
+				select id from (select id from Stories where
 				id <= $storyId and
 				status = " . STORY_AVAILABLE . " and 
 				user != $userId
-				order by id asc";
+				order by id asc) as t2";
 		return $this->getStory($query);
 	}
 	
