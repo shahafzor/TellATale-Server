@@ -3,6 +3,8 @@ include_once 'DbConnection.php';
 
 define ('STORY_AVAILABLE',	0);
 define ('STORY_UNAVAILABLE',1);
+define ('STORY_REJECTED',	2);
+define ('STORY_REPLACED',3);
 
 class StoryTable extends DbConnection
 {
@@ -28,15 +30,25 @@ class StoryTable extends DbConnection
 		return null;
 	}
 	
-	/*public function getAvailableStory()
-	{
-		$query = "select id from Stories where status=" . STORY_AVAILABLE;
-		return $this->getStory($query);
-	}*/
-	
 	public function getAvailableStory($userId)
 	{
 		$query = "select id from Stories where status=" . STORY_AVAILABLE . " and user!=$userId";
+		return $this->getStory($query);
+	}
+	
+	// TODO: make the function better
+	public function getNextAvailableStory($storyId, $userId)
+	{
+		$query = "select id from Stories where
+				id > $storyId and
+				status = " . STORY_AVAILABLE . " and 
+				user != $userId
+				union
+				select id from Stories where
+				id <= $storyId and
+				status = " . STORY_AVAILABLE . " and 
+				user != $userId
+				order by id asc";
 		return $this->getStory($query);
 	}
 	
@@ -48,14 +60,7 @@ class StoryTable extends DbConnection
 	
 	public function changeStoryStatus($storyId, $newStatus, $userId)
 	{
-		if ($userId)
-		{
-			$query = "UPDATE Stories SET status=$newStatus, user=$userId WHERE id=$storyId";
-		}
-		else
-		{
-			$query = "UPDATE Stories SET status=$newStatus WHERE id=$storyId";
-		}
+		$query = "UPDATE Stories SET status=$newStatus, user=$userId WHERE id=$storyId";
 		$result = self::$DB->query($query);
 		if (!$result)
 		{

@@ -61,6 +61,7 @@ $name = $xmlObj['name'];
 // 2. create an xml file to save the new story
 if (!$name)
 {
+	// TODO: check duplicate story
 	$storyTable->lockTable();
 	
 	$storyId = $storyTable->getNextId();
@@ -161,7 +162,7 @@ else
 	$result = $storyTable->changeStoryStatus($storyId, STORY_AVAILABLE, $user->getId());
 	if (!$result)
 	{
-		removeFile($name);
+		// TODO: decide what to do on error
 		exitError();
 	}
 }
