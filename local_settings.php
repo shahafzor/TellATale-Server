@@ -1,8 +1,8 @@
 <?php
 define('ROOT_DIR', '/TellATale/');
 
-define('DBNAME', 'story');
-define('DBHOSTNAME','localhost');
-define('DBUSERNAME','shahaf');
-define('DBPASSWORD','');
+define('DB_NAME', 'story');
+define('DB_HOSTNAME','localhost');
+define('DB_USERNAME','shahaf');
+define('DB_PASSWORD','');
 ?>

@@ -9,6 +9,7 @@ define ('STATUS_ERROR_CREDENTIALS',	5);
 define ('STATUS_ILEGAL_SEGMENT',	6);
 define ('STORIES_DIR_PATH', $_SERVER['DOCUMENT_ROOT'] . ROOT_DIR . 'stories/');
 define ('XML_PREFIX', "<?xml version='1.0' encoding='UTF-8' standalone='yes'?>");
+define ('NO_USER_ID',	0);
 
 include_once 'classes/StoryTable.php';
 include_once 'classes/UserTable.php';
@@ -47,14 +48,8 @@ function setStatus($code)
  */
 function logIn($username, $password)
 {
-	// open connection to 'Users' table in the database
-	$userTable = new UserTable();
-	if ($userTable->getError() != 0)
-	{
-		return null;
-	}
 	// try to login with username and password
-	$user = $userTable->logIn($username, $password);
+	$user = UserTable::logIn($username, $password);
 	return $user;
 }
 

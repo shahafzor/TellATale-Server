@@ -3,23 +3,16 @@ include_once 'DbConnection.php';
 
 define ('STORY_AVAILABLE',	0);
 define ('STORY_UNAVAILABLE',1);
-define ('STORY_REJECTED',	2);
-define ('STORY_REPLACED',3);
+define ('REJECT_STORY',	2);
+define ('REPLACE_STORY',3);
 
 class StoryTable extends DbConnection
 {
-	public function __construct()
+	private static function getStory($query)
 	{
-		parent::__construct();
-	}
-	
-	private function getStory($query)
-	{
-		$result = self::$DB->query($query);
+		$result = self::execute($query);
 		if (!$result)
 		{
-			$logMsg = __METHOD__ . " line " . __LINE__  . ": self::$DB->error query: $query";
-			Error::printToLog(ERRLOGFILE, self::$DB->errno, $logMsg);
 			return null;
 		}
 		$story = $result->fetch_array();
@@ -30,13 +23,13 @@ class StoryTable extends DbConnection
 		return null;
 	}
 	
-	public function getAvailableStory($userId)
+	public static function getAvailableStory($userId)
 	{
 		$query = "select id from Stories where status=" . STORY_AVAILABLE . " and user!=$userId";
-		return $this->getStory($query);
+		return self::getStory($query);
 	}
 	
-	public function getNextAvailableStory($storyId, $userId)
+	public static function getNextAvailableStory($storyId, $userId)
 	{
 		$query = "select id from (select id from Stories where
 				id > $storyId and
@@ -49,67 +42,52 @@ class StoryTable extends DbConnection
 				status = " . STORY_AVAILABLE . " and 
 				user != $userId
 				order by id asc) as t2";
-		return $this->getStory($query);
+		return self::getStory($query);
 	}
 	
-	public function getStoryByUserId($userId)
+	public static function getStoryByUserId($userId)
 	{
 		$query = "select id from Stories where status=" . STORY_UNAVAILABLE . " and user=$userId";
-		return $this->getStory($query);
+		return self::getStory($query);
 	}
 	
-	public function changeStoryStatus($storyId, $newStatus, $userId)
+	public static function changeStoryStatus($storyId, $newStatus, $userId)
 	{
 		$query = "UPDATE Stories SET status=$newStatus, user=$userId WHERE id=$storyId";
-		$result = self::$DB->query($query);
-		if (!$result)
-		{
-			$logMsg = __METHOD__ . " line " . __LINE__  . ": " . self::$DB->error;
-			Error::printToLog(ERRLOGFILE, self::$DB->errno, $logMsg);
-		}
-		
+		$result = self::execute($query);
 		return $result;
 	}
 	
-	public function addStoryToDb($userId)
+	public static function addStoryToDb($userId)
 	{
 		$query = "insert into Stories values (null, 0, $userId)";
-		$result = self::$DB->query($query);
-		if (!$result)
-		{
-			$logMsg = __METHOD__ . " line " . __LINE__  . ": " . self::$DB->error;
-			Error::printToLog(ERRLOGFILE, self::$DB->errno, $logMsg);
-		}
+		$result = self::execute($query);
 		return $result;
 	}
 
-	public function getLastStoryId()
+	public static function getLastStoryId()
 	{
 		$query = "select max(id) from Stories";
-		$result = self::$DB->query($query);
+		$result = self::execute($query);
 		if (!$result)
 		{
-			$logMsg = __METHOD__ . " line " . __LINE__  . ": " . self::$DB->error;
-			Error::printToLog(ERRLOGFILE, self::$DB->errno, $logMsg);
 			return -1;
 		}
 		$val = $result->fetch_array();
 		return $val['max(id)'];
 	}
 	
-	public function lockTable()
+	public static function lockTable()
 	{
-		parent::lockTable("Stories");
+		return parent::lockTable("Stories");
 	}
 	
-	public function getNextId()
+	public static function getNextId()
 	{
 		$query = "show table status like 'Stories'";
-		$result = self::$DB->query($query);
+		$result = self::execute($query);
 		if (!$result)
 		{
-			$logMsg = __METHOD__ . " line " . __LINE__  . ": " . self::$DB->error;
-			Error::printToLog(ERRLOGFILE, self::$DB->errno, $logMsg);
 			return -1;
 		}
 		$info = $result->fetch_array();

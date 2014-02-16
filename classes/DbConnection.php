@@ -2,50 +2,90 @@
 include_once 'Error.php';
 include_once 'local_settings.php';
 
+define ('DUPLICATE_ENTRY', 1062);
+
 class DbConnection
 {
-	const DBNAME = DBNAME;
-	const HOSTNAME = DBHOSTNAME;
-	const USERNAME = DBUSERNAME;
-	const PASSWORD = DBPASSWORD;
+	const DBNAME = DB_NAME;
+	const HOSTNAME = DB_HOSTNAME;
+	const USERNAME = DB_USERNAME;
+	const PASSWORD = DB_PASSWORD;
 	
-	protected static $DB = null;
-	protected $Error = 0;
-	protected $ErrorMsg;
+	private static $DB = null;
 	
-	protected function __construct()
+	private function __construct() {}
+	
+	private static function connect()
+	{
+		if (self::$DB != null)
+		{
+			return;
+		}
+		Error::printToLog(ERRLOGFILE, 0, "connecting to DB...");
+		self::$DB = new mysqli(self::HOSTNAME, self::USERNAME, self::PASSWORD, self::DBNAME);
+		if (self::getConnectError())
+		{
+			$logMsg = __METHOD__ . " line " . __LINE__  . ": " . self::getConnectErrorMsg();
+			Error::printToLog(ERRLOGFILE, self::getConnectError(), $logMsg);
+			self::closeDB();
+		}
+	}
+	
+	protected static function execute($query)
 	{
 		if (self::$DB == null)
 		{
-			self::$DB = new mysqli(self::HOSTNAME, self::USERNAME, self::PASSWORD, self::DBNAME);
-			$this->Error = self::$DB->connect_errno;
-			$this->ErrorMsg = self::$DB->connect_error;
-			if (self::$DB->connect_error)
+			self::connect();
+			if (self::$DB == null)
 			{
-				$logMsg = __METHOD__ . " line " . __LINE__  . ": " . self::$DB->connect_error;
-				Error::printToLog(ERRLOGFILE, self::$DB->connect_errno, $logMsg);
-				self::closeDB();
+				return false;
 			}
 		}
+		
+		Error::printToLog(ERRLOGFILE, 0, "query: $query");
+		$result = self::$DB->query($query);
+		if (!$result)
+		{
+			$logMsg = __METHOD__ . " line " . __LINE__  . ": " . self::getErrorMsg() . "query: $query";
+			Error::printToLog(ERRLOGFILE, self::getError(), $logMsg);
+		}
+		
+		return $result;
 	}
 	
 	public static function closeDB()
 	{
 		if (self::$DB)
 		{
+			Error::printToLog(ERRLOGFILE, 0, "closing DB...");
 			self::$DB->close();
 			self::$DB = null;
 		}
 	}
 	
-	public function getError()
+	public static function getError()
 	{
-		return $this->Error;
+		return self::$DB->errno;
 	}
 	
-	public function getErrorMsg()
+	public static function getErrorMsg()
 	{
-		return $this->ErrorMsg;
+		return self::$DB->error;
+	}
+	
+	public static function getConnectError()
+	{
+		return self::$DB->connect_errno;
+	}
+	
+	public static function getConnectErrorMsg()
+	{
+		return self::$DB->connect_error;
+	}
+	
+	public static function isConnected()
+	{
+		return (self::$DB != null and self::getConnectError() == 0);
 	}
 	
 	public static function escapeString($str)
@@ -53,16 +93,16 @@ class DbConnection
 		return self::$DB->real_escape_string($str);
 	}
 	
-	protected function lockTable($tableName)
+	protected static function lockTable($tableName)
 	{
 		$query = "lock tables $tableName write";
-		self::$DB->query($query);
+		return self::execute($query);
 	}
 	
 	public static function unlockTables()
 	{
 		$query = "unlock tables";
-		self::$DB->query($query);
+		self::execute($query);
 	}
 }
 ?>

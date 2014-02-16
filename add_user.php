@@ -11,15 +11,8 @@ include_once 'classes/InputCheck.php';
 
 function addUser($user)
 {
-	// open connection to 'Users' table in the database
-	$userTable = new UserTable();
-	if ($userTable->getError() != 0)
-	{
-		echo "Oops... Try later";
-		return 1;
-	}
-	
-	$status = $userTable->addUser($user);
+	$status = UserTable::addUser($user);
+	echo $status;
 	switch ($status)
 	{
 		case 0:	// Success
@@ -30,17 +23,19 @@ function addUser($user)
 				"Android.login('$username', $permission, '$password');" .
 			"</script>";
 			break;
-		case 1062:	// Duplicate user name
+		case DUPLICATE_ENTRY:	// Duplicate user name
 			echo "This username is taken, please try a new username <br> <br>";
-			$status = -1;
+			break;
+		case -1:	// db connection error
+			echo "Is there anybody out there?<br>";
 			break;
 		default:	// Other error
 			echo "We have a small problem...<br>";
-			Error::printToLog(ERRLOGFILE, $status, __METHOD__ . ": " . $dblink->error);
+			Error::printToLog(ERRLOGFILE, $status, __METHOD__ . ": " . UserTable::getErrorMsg());
 			break;
 	}
 	// close database connection after use
-	$userTable->closeDB();
+	UserTable::closeDB();
 	
 	return $status;
 }
@@ -59,8 +54,9 @@ if (isset($_POST['add_user']))
 		
 		// add the user to the database
 		$status = addUser($user);
-		if ($status != -1)
+		if ($status != DUPLICATE_ENTRY)
 		{
+			echo "</body> </html>";
 			// exit for success and all errors excpet duplicate entry error
 			exit();
 		}

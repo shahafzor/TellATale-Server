@@ -46,13 +46,6 @@ if (!$user)
 	exitError(STATUS_ERROR_CREDENTIALS);
 }
 
-// connect to database 'story' table
-$storyTable = new StoryTable();
-if ($storyTable->getError() != 0)
-{
-	exitError();
-}
-
 // retrieve the story's name from the story xml object
 $name = $xmlObj['name'];
 
@@ -61,10 +54,17 @@ $name = $xmlObj['name'];
 // 2. create an xml file to save the new story
 if (!$name)
 {
-	// TODO: check duplicate story
-	$storyTable->lockTable();
+	/** TODO:
+	 * - check duplicate story
+	 * - check permission
+	 */
 	
-	$storyId = $storyTable->getNextId();
+	if (!StoryTable::lockTable())
+	{
+		exitError();
+	}
+	
+	$storyId = StoryTable::getNextId();
 	if ($storyId == -1)
 	{
 		exitErrorUnlockTables();
@@ -85,14 +85,14 @@ if (!$name)
 		exitErrorUnlockTables();
 	}
 	
-	$result = $storyTable->addStoryToDb($user->getId());
+	$result = StoryTable::addStoryToDb($user->getId());
 	if (!$result)
 	{
 		removeFile($name);
 		exitErrorUnlockTables();
 	}
 
-	$storyTable->unlockTables();
+	StoryTable::unlockTables();
 }
 
 // this story segment belongs to an existing story, so we:
@@ -159,7 +159,7 @@ else
 	
 	// change the story's status from 'unavailable' to 'available'.
 	$storyId = getStoryId($name);
-	$result = $storyTable->changeStoryStatus($storyId, STORY_AVAILABLE, $user->getId());
+	$result = StoryTable::changeStoryStatus($storyId, STORY_AVAILABLE, $user->getId());
 	if (!$result)
 	{
 		// TODO: decide what to do on error

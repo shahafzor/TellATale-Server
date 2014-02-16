@@ -38,35 +38,39 @@ if (!$user)
 	exitError(STATUS_ERROR_CREDENTIALS);
 }
 
-$storyTable = new StoryTable();
-if ($storyTable->getError() != 0)
-{
-	exitError();
-}
-
 $userId = $user->getId();
 
-if ($action == STORY_REJECTED or $action == STORY_REPLACED)
+if ($action == REJECT_STORY or $action == REPLACE_STORY)
 {
 	// TODO: make rejected story unavailable forever
-	$user = $action == STORY_REJECTED ? $userId : 0;
-	$result = $storyTable->changeStoryStatus(getStoryId(getStory()), STORY_AVAILABLE, $user);
+	$storyId = getStoryId(getStory());
+	$result = StoryTable::changeStoryStatus($storyId, STORY_AVAILABLE, NO_USER_ID);
 	if (!$result)
 	{
 		exitError();
 	}
 	
-	$storyId = $storyTable->getNextAvailableStory(getStoryId(getStory()), $userId);
+	if ($action == REJECT_STORY)
+	{
+		
+		//$result = $storyHistoryTable->addRow($storyId, $userId, STORY_AVAILABLE);
+		//if (!$result)
+		//{
+			//exitError();
+		//}
+	}
+	
+	$storyId = StoryTable::getNextAvailableStory(getStoryId(getStory()), $userId);
 }
 else
 {
 	// first, try to get the story that currently belongs to this user
-	$storyId = $storyTable->getStoryByUserId($userId);
+	$storyId = StoryTable::getStoryByUserId($userId);
 	
 	// if not found, try to find an available story to assign to this user
 	if (! $storyId)
 	{
-		$storyId = $storyTable->getAvailableStory($userId);
+		$storyId = StoryTable::getAvailableStory($userId);
 	}
 }
 
@@ -89,7 +93,7 @@ if (!$xmlObj)
 }
 
 // change the story status to unavailable
-$result = $storyTable->changeStoryStatus($storyId, STORY_UNAVAILABLE, $userId);
+$result = StoryTable::changeStoryStatus($storyId, STORY_UNAVAILABLE, $userId);
 if (!$result)
 {
 	exitError();

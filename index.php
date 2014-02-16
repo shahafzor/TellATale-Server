@@ -10,20 +10,12 @@ include_once 'classes/InputCheck.php';
 
 function login($username, $password)
 {
-	// open connection to 'Users' table in the database
-	$userTable = new UserTable();
-	if ($userTable->getError() != 0)
-	{
-		echo "Oops... Try later";
-		return 1;
-	}
-	
 	// try to login with username and password
-	$user = $userTable->logIn($username, $password);
-	
+	$user = UserTable::logIn($username, $password);
+
 	// close database connection after use
-	$userTable->closeDB();
-	
+	UserTable::closeDB();
+
 	// successfull login
 	if ($user)
 	{
@@ -35,11 +27,16 @@ function login($username, $password)
 			"</script>";
 		return 0;
 	}
-	else
+	elseif ($user === null)
 	{
 		echo "wrong login details <br> <br>";
-		return -1;
 	}
+	else
+	{
+		echo "Please get some sleep <br> <br>";
+	}
+	
+	return -1;
 }
 
 // Script starts here

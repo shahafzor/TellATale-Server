@@ -4,23 +4,16 @@ include_once 'User.php';
 
 class UserTable extends DbConnection
 {
-	public function __construct()
-	{
-		parent::__construct();
-	}
-
-	public function getUserId($username)
+	public static function getUserId($username)
 	{
 		if (!$username)
 		{
 			return -1;
 		}
 		$query = "select user_id from Users where username = '$username'";
-		$result = self::$DB->query($query);
+		$result = self::execute($query);
 		if (!$result)
 		{
-			$logMsg = __METHOD__ . " line " . __LINE__  . ": " . self::$DB->error;
-			Error::printToLog(ERRLOGFILE, self::$DB->errno, $logMsg);
 			return -1;
 		}
 		$row = $result->fetch_array();
@@ -31,20 +24,18 @@ class UserTable extends DbConnection
 		return $row['user_id'];
 	}
 
-	private function getUser($query)
+	private static function getUser($query)
 	{
-		$result = self::$DB->query($query);
+		$result = self::execute($query);
 		if (!$result)
 		{
-			$logMsg = __METHOD__ . " line " . __LINE__  . ": " . self::$DB->error;
-			Error::printToLog(ERRLOGFILE, self::$DB->errno, $logMsg);
-			return null;
+			return false;
 		}
 		$row = $result->fetch_array();
-		return $this->rowToUser($row);
+		return self::rowToUser($row);
 	}
 
-	public function addUser($user)
+	public static function addUser($user)
 	{
 		$username = $user->getUsername();
 		$password = $user->getPassword();
@@ -53,22 +44,22 @@ class UserTable extends DbConnection
 		// TODO: add languages
 		
 		$query = "insert into Users values (null, '$username', '$password', $permission)";
-		$result = self::$DB->query($query);
-		if (!$result and self::$DB->errno != 1062)
+		$result = self::execute($query);
+		
+		if (!self::isConnected())
 		{
-			$logMsg = __METHOD__ . " line " . __LINE__  . ": " . self::$DB->error;
-			Error::printToLog(ERRLOGFILE, self::$DB->errno, $logMsg);
+			return -1;
 		}
-		return self::$DB->errno;
+		return self::getError();
 	}
 	
-	public function getUserByName($username)
+	public static function getUserByName($username)
 	{
 		$query = "select * from Users where username = '$username'";
-		return $this->getUser($query);
+		return self::getUser($query);
 	}
 	
-	public function getRandomUser()
+	public static function getRandomUser()
 	{
 		$query = "SELECT * FROM Users JOIN
 			(SELECT (RAND() * 
@@ -77,11 +68,10 @@ class UserTable extends DbConnection
 			AS tmp
 			WHERE user_id >= rand_id
 			limit 1";
-		print ($query . "<br>");
-		return $this->getUser($query);
+		return self::getUser($query);
 	}
 	
-	private function rowToUser($row)
+	private static function rowToUser($row)
 	{
 		if ($row == null)
 		{
@@ -96,20 +86,23 @@ class UserTable extends DbConnection
 		// TODO: add languages
 	}
 	
-	public function logIn($username, $password)
+	/**
+	 * @param string $username
+	 * @param string $password
+	 * @return false: query failed, null: user was not found or incorrect pasword, User: otherwise
+	 */
+	public static function logIn($username, $password)
 	{
 		// try to get a specific user from the database by it's name
-		$user = $this->getUserByName($username);
+		$user = self::getUserByName($username);
 
-		// check if this username exists and the password is correct
-		if ($user and $password === $user->getPassword())
-		{
-			return $user;
-		}
-		else
+		// user was found and the password is incorrect
+		if ($user and $user->getPassword() !== $password)
 		{
 			return null;
 		}
+		
+		return $user;
 	}
 }
 ?>
