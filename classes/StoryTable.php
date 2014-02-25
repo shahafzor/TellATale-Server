@@ -1,10 +1,9 @@
 <?php
 include_once 'DbConnection.php';
+include_once 'StoryHistoryTable.php';
 
 define ('STORY_AVAILABLE',	0);
 define ('STORY_UNAVAILABLE',1);
-define ('REJECT_STORY',	2);
-define ('REPLACE_STORY',3);
 
 class StoryTable extends DbConnection
 {
@@ -25,13 +24,19 @@ class StoryTable extends DbConnection
 	
 	public static function getAvailableStory($userId)
 	{
-		$query = "select id from Stories where status=" . STORY_AVAILABLE . " and user!=$userId";
+		$query = "select * from
+				(select id from Stories where status=" . STORY_AVAILABLE . " and user!=$userId) as t1
+				left join
+				(select * from story_history where user_id=$userId and relation=" . STORY_REJECTED . ") as t2
+				on t1.id=t2.story_id
+				where (t2.story_id is NULL)";
 		return self::getStory($query);
 	}
 	
 	public static function getNextAvailableStory($storyId, $userId)
 	{
-		$query = "select id from (select id from Stories where
+		$query = "select * from
+				(select id from (select id from Stories where
 				id > $storyId and
 				status = " . STORY_AVAILABLE . " and 
 				user != $userId
@@ -41,7 +46,11 @@ class StoryTable extends DbConnection
 				id <= $storyId and
 				status = " . STORY_AVAILABLE . " and 
 				user != $userId
-				order by id asc) as t2";
+				order by id asc) as t2) as t3
+				left join
+				(select * from story_history where user_id=$userId and relation=" . STORY_REJECTED . ") as t4
+				on t3.id=t4.story_id
+				where (t4.story_id is NULL)";
 		return self::getStory($query);
 	}
 	

@@ -46,7 +46,7 @@ class DbConnection
 		$result = self::$DB->query($query);
 		if (!$result)
 		{
-			$logMsg = __METHOD__ . " line " . __LINE__  . ": " . self::getErrorMsg() . "query: $query";
+			$logMsg = __METHOD__ . " line " . __LINE__  . ": " . self::getErrorMsg() . " query: $query";
 			Error::printToLog(ERRLOGFILE, self::getError(), $logMsg);
 		}
 		

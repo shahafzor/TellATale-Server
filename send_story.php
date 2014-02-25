@@ -3,6 +3,9 @@ include_once 'common.php';
 include_once 'storyXml.php';
 include_once 'classes/InputCheck.php';
 
+define ('REJECT_STORY',	2);
+define ('REPLACE_STORY',3);
+
 function getUserName()
 {
 	return $_GET['username'];
@@ -52,12 +55,7 @@ if ($action == REJECT_STORY or $action == REPLACE_STORY)
 	
 	if ($action == REJECT_STORY)
 	{
-		
-		//$result = $storyHistoryTable->addRow($storyId, $userId, STORY_AVAILABLE);
-		//if (!$result)
-		//{
-			//exitError();
-		//}
+		StoryHistoryTable::addReject($storyId, $userId);
 	}
 	
 	$storyId = StoryTable::getNextAvailableStory(getStoryId(getStory()), $userId);
