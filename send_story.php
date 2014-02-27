@@ -45,7 +45,6 @@ $userId = $user->getId();
 
 if ($action == REJECT_STORY or $action == REPLACE_STORY)
 {
-	// TODO: make rejected story unavailable forever
 	$storyId = getStoryId(getStory());
 	$result = StoryTable::changeStoryStatus($storyId, STORY_AVAILABLE, NO_USER_ID);
 	if (!$result)

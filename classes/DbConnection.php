@@ -42,7 +42,6 @@ class DbConnection
 			}
 		}
 		
-		Error::printToLog(ERRLOGFILE, 0, "query: $query");
 		$result = self::$DB->query($query);
 		if (!$result)
 		{

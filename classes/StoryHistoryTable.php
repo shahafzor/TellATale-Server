@@ -18,5 +18,21 @@ class StoryHistoryTable extends DbConnection
 		$query = "insert into story_history values ('$storyId', '$userId', " . STORY_REJECTED . ")";
 		return self::execute($query);
 	}
+	
+	public static function getMyStories($userId)
+	{
+		$query = "select story_id from story_history where user_id=$userId and relation=" . STORY_CONTRIBUTED;
+		$result = self::execute($query);
+		if (!$result)
+		{
+			return false;
+		}
+		
+		while ($row = $result->fetch_array())
+		{
+			$stories[] = $row['story_id'];
+		}
+		return $stories;
+	}
 }
 ?>

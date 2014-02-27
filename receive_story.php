@@ -167,5 +167,8 @@ else
 	}
 }
 
+// TODO: decide when to add and remove contribute
+StoryHistoryTable::addContribute($storyId, $user->getId());
+
 exitError(STATUS_RESPONSE_OK);
 ?>

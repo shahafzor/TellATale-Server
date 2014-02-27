@@ -44,6 +44,25 @@ function addSegment($xmlFile, $xmlObj)
 	$storySegment->addChild('dislike', 0);
 }
 
+function addStory($xmlFile, $xmlObj)
+{
+	$story = $xmlFile->addChild('story', '');
+	$story["name"] = $xmlObj["name"];
+	foreach ($xmlObj as $segment)
+	{
+		addStorySegment($story, $segment);
+	}
+}
+
+function addStorySegment($story, $segment)
+{
+	$storySegment = $story->addChild('story_segment', '');
+	foreach ($segment as $detail)
+	{
+		$storySegment->addChild($detail->getName(), $detail);
+	}
+}
+
 function saveXmlFile($xmlObj, $storyName)
 {
 	$result = $xmlObj->asXML(STORIES_DIR_PATH . "$storyName.xml");
