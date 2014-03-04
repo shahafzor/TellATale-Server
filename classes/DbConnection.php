@@ -21,7 +21,6 @@ class DbConnection
 		{
 			return;
 		}
-		Error::printToLog(ERRLOGFILE, 0, "connecting to DB...");
 		self::$DB = new mysqli(self::HOSTNAME, self::USERNAME, self::PASSWORD, self::DBNAME);
 		if (self::getConnectError())
 		{
@@ -56,7 +55,6 @@ class DbConnection
 	{
 		if (self::$DB)
 		{
-			Error::printToLog(ERRLOGFILE, 0, "closing DB...");
 			self::$DB->close();
 			self::$DB = null;
 		}
