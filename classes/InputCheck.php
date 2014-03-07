@@ -13,7 +13,7 @@ class InputCheck
 	
 	public static function validateUsername($username)
 	{
-		if (strlen($username) < 3 or strlen($username) > 20)
+		if (strlen($username) < 3 or strlen($username) > 12)
 		{
 			echo "username must be 3-20 charachters <br> <br>";
 			return false;
@@ -29,7 +29,7 @@ class InputCheck
 	
 	public static function validatePassword($password)
 	{
-		if (strlen($password) < 6 or strlen($password) > 10)
+		if (strlen($password) < 6 or strlen($password) > 12)
 		{
 			echo "password must be 6-10 charachters <br> <br>";
 			return false;

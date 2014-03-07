@@ -35,7 +35,7 @@ if (!InputCheck::validateCredentials($username, $password))
 	exitError();
 }
 
-$user = logIn($username, $password);
+$user = UserTable::logIn($username, $password);
 if (!$user)
 {
 	exitError(STATUS_ERROR_CREDENTIALS);

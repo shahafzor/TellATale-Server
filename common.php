@@ -7,6 +7,10 @@ define ('STATUS_RESPONSE_OK', 3);
 define ('STATUS_ERROR', 4);
 define ('STATUS_ERROR_CREDENTIALS',	5);
 define ('STATUS_ILEGAL_SEGMENT',	6);
+define ('STATUS_LOGIN_OK', 7);
+define ('STATUS_ILLEGAL_INPUT', 8);
+define ('STATUS_DUPLICATE_USER', 9);
+
 define ('STORIES_DIR_PATH', $_SERVER['DOCUMENT_ROOT'] . ROOT_DIR . 'stories/');
 define ('XML_PREFIX', "<?xml version='1.0' encoding='UTF-8' standalone='yes'?>");
 define ('NO_USER_ID',	0);
@@ -40,17 +44,6 @@ function exitError($code)
 function setStatus($code)
 {
 	header('status_code: ' . $code);
-}
-
-/**
- * login with username and password
- * return user object on success, null on failure
- */
-function logIn($username, $password)
-{
-	// try to login with username and password
-	$user = UserTable::logIn($username, $password);
-	return $user;
 }
 
 function getStoryName($storyId)
