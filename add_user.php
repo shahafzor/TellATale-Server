@@ -1,5 +1,4 @@
 <?php
-define ('BASIC_PERMISION',	0);
 include_once 'common.php';
 include_once 'classes/InputCheck.php';
 
@@ -39,7 +38,7 @@ if (!InputCheck::validateCredentials($username, $password))
 }
 
 // create a user object
-$user = new User($username, $password, BASIC_PERMISION);
+$user = new User($username, $password, PERMISION_BASIC);
 
 // add the user to the database
 addUser($user);

@@ -56,8 +56,11 @@ if (!$name)
 {
 	/** TODO:
 	 * - check duplicate story
-	 * - check permission
 	 */
+	if ($user->getPermission() < PERMISION_BEGIN_STORY)
+	{
+		exitError(STATUS_NO_PERMISSION);
+	}
 	
 	if (!StoryTable::lockTable())
 	{

@@ -54,7 +54,7 @@ foreach ($stories as $story)
 		exitError();
 	}
 
-	addStory($xmlFile, $xmlObj);//TODO
+	addStory($xmlFile, $xmlObj);
 }
 
 setStatus(STATUS_XML_OK);

@@ -1,4 +1,5 @@
 <?php
+// TODO: turn into a class
 function incDislikes($xmlFile, $seqNumber)
 {
 	foreach ($xmlFile->story_segment as $segment)
