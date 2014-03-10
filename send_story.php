@@ -96,11 +96,5 @@ if (!$result)
 	exitError();
 }
 
-setStatus(STATUS_XML_OK);
-
-// output the story xml file
-echo $xmlObj->asXml();
-
-// close connection to database
-DbConnection::closeDB();
+exitError(STATUS_XML_OK, $xmlObj->asXml());
 ?>

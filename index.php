@@ -7,28 +7,24 @@ $username = $_GET ['username'];
 $password = $_GET ['password'];
 
 // validate user input
-if (! InputCheck::validateCredentials ( $username, $password ))
+if (!InputCheck::validateCredentials($username, $password))
 {
-	exitError ( STATUS_ILLEGAL_INPUT );
+	exitError(STATUS_ILLEGAL_INPUT);
 }
 
 // try to login with username and password
-$user = UserTable::logIn ( $username, $password );
-
-// close database connection after use
-UserTable::closeDB ();
+$user = UserTable::logIn ($username, $password);
 
 if ($user) // successfull login
 {
-	setStatus ( STATUS_LOGIN_OK );
-	echo $user->getPermission ();
+	exitError(STATUS_LOGIN_OK, $user->getPermission());
 }
 elseif ($user === null) // unseccssful login
 {
-	setStatus ( STATUS_ERROR_CREDENTIALS );
+	exitError(STATUS_ERROR_CREDENTIALS);
 }
 else
 {
-	setStatus ( STATUS_ERROR );
+	exitError(STATUS_ERROR);
 }
 ?>

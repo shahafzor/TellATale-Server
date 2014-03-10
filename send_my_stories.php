@@ -51,17 +51,11 @@ foreach ($stories as $story)
 	{
 		$logMsg = __FILE__ . " line " . __LINE__  . ": " . "simplexml_load_file($storyFile) error";
 		Error::printToLog(ERRLOGFILE, -1, $logMsg);
-		exitError();
+		continue;
 	}
 
 	addStory($xmlFile, $xmlObj);
 }
 
-setStatus(STATUS_XML_OK);
-
-// output the story xml file
-echo $xmlFile->asXml();
-
-// close connection to database
-DbConnection::closeDB();
+exitError(STATUS_XML_OK, $xmlFile->asXml());
 ?>

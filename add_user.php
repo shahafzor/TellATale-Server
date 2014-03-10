@@ -8,23 +8,15 @@ function addUser($user)
 	switch ($status)
 	{
 		case 0:	// Success
-			setStatus(STATUS_LOGIN_OK);
-			break;
+			return STATUS_LOGIN_OK;
 		case DUPLICATE_ENTRY:	// Duplicate user name
-			setStatus(STATUS_DUPLICATE_USER);
-			break;
+			return STATUS_DUPLICATE_USER;
 		case -1:	// db connection error
-			setStatus(STATUS_ERROR);
-			break;
+			return STATUS_ERROR;
 		default:	// Other error
-			setStatus(STATUS_ERROR);
 			Error::printToLog(ERRLOGFILE, $status, __METHOD__ . ": " . UserTable::getErrorMsg());
-			break;
+			return  STATUS_ERROR;
 	}
-	// close database connection after use
-	UserTable::closeDB();
-	
-	return $status;
 }
 
 // Script starts here
@@ -41,5 +33,7 @@ if (!InputCheck::validateCredentials($username, $password))
 $user = new User($username, $password, PERMISION_BASIC);
 
 // add the user to the database
-addUser($user);
+$status = addUser($user);
+
+exitError($status);
 ?>

@@ -31,19 +31,24 @@ function exitErrorUnlockTables($code)
 	exitError($code);
 }
 
-function exitError($code)
+function exitError($code, $output)
 {
 	if (!isset($code))
 	{
-		setStatus(STATUS_ERROR);
-	}
-	else
-	{
-		setStatus($code);
+		$code = STATUS_ERROR;
 	}
 	
 	// close connection to database
 	DbConnection::closeDB();
+	
+	// set 'status_code' header
+	setStatus($code);
+	
+	if (isset($output))
+	{
+		echo $output;
+	}
+	
 	exit();
 }
 
