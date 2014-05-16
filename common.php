@@ -66,4 +66,21 @@ function getStoryId($storyName)
 {
 	return ltrim($storyName, "story_");
 }
+
+function addUser($user)
+{
+	$status = UserTable::addUser($user);
+	switch ($status)
+	{
+		case 0:	// Success
+			return STATUS_LOGIN_OK;
+		case DUPLICATE_ENTRY:	// Duplicate user name
+			return STATUS_DUPLICATE_USER;
+		case -1:	// db connection error
+			return STATUS_ERROR;
+		default:	// Other error
+			Error::printToLog(ERRLOGFILE, $status, __METHOD__ . ": " . UserTable::getErrorMsg());
+			return  STATUS_ERROR;
+	}
+}
 ?>

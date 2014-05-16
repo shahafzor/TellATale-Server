@@ -32,7 +32,7 @@ $password = getPassword($xmlObj);
 $action = (int)getAction($xmlObj);
 if (!InputCheck::validateCredentials($username, $password))
 {
-	exitError();
+	exitError(STATUS_ILLEGAL_INPUT);
 }
 
 $user = UserTable::logIn($username, $password);

@@ -13,7 +13,7 @@ if (!InputCheck::validateCredentials($username, $password))
 }
 
 // try to login with username and password
-$user = UserTable::logIn ($username, $password);
+$user = UserTable::logIn($username, $password);
 
 if ($user) // successfull login
 {

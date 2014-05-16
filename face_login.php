@@ -1,4 +1,5 @@
 <?php
+// 685063249
 include_once 'common.php';
 include_once 'classes/InputCheck.php';
 
@@ -17,6 +18,24 @@ $user = new User($username, $password, PERMISION_BASIC);
 
 // add the user to the database
 $status = addUser($user);
+
+if ($status == STATUS_DUPLICATE_USER)
+{
+	$user = UserTable::logIn($username, $password);
+	
+	if ($user) // successfull login
+	{
+		exitError(STATUS_LOGIN_OK, $user->getPermission());
+	}
+	elseif ($user === null) // unseccssful login
+	{
+		exitError(STATUS_ERROR_CREDENTIALS);
+	}
+	else
+	{
+		exitError(STATUS_ERROR);
+	}
+}
 
 exitError($status);
 ?>
