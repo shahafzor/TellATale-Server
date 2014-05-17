@@ -4,13 +4,13 @@ include_once 'User.php';
 
 class UserTable extends DbConnection
 {
-	public static function getUserId($username)
+	public static function getUserId($username, $faceId = 0)
 	{
 		if (!$username)
 		{
 			return -1;
 		}
-		$query = "select user_id from Users where username = '$username'";
+		$query = "select user_id from Users where username = '$username' and facebook_id = $faceId";
 		$result = self::execute($query);
 		if (!$result)
 		{
@@ -40,10 +40,11 @@ class UserTable extends DbConnection
 		$username = $user->getUsername();
 		$password = $user->getPassword();
 		$permission = $user->getPermission();
+		$faceId = $user->getFacebookId();
 
 		// TODO: add languages
 		
-		$query = "insert into Users values (null, '$username', '$password', $permission)";
+		$query = "insert into Users values (null, '$username', '$password', $permission, $faceId)";
 		$result = self::execute($query);
 		
 		if (!self::isConnected())
@@ -53,9 +54,9 @@ class UserTable extends DbConnection
 		return self::getError();
 	}
 	
-	public static function getUserByName($username)
+	public static function getUserByName($username, $faceId = 0)
 	{
-		$query = "select * from Users where username = '$username'";
+		$query = "select * from Users where username = '$username' and facebook_id = $faceId";
 		return self::getUser($query);
 	}
 	
@@ -81,8 +82,10 @@ class UserTable extends DbConnection
 		$password = $row['password'];
 		$permission = $row['permission'];
 		$id = $row['user_id'];
-		return new User($username, $password, $permission, $id);
-		
+		$faceId = $row['facebook_id'];
+		$user = new User($username, $password, $permission, $id);
+		$user->setFacebookId($faceId);
+		return $user;
 		// TODO: add languages
 	}
 	
@@ -91,10 +94,10 @@ class UserTable extends DbConnection
 	 * @param string $password
 	 * @return false: query failed, null: user was not found or incorrect pasword, User: otherwise
 	 */
-	public static function logIn($username, $password)
+	public static function logIn($username, $password, $faceId = 0)
 	{
 		// try to get a specific user from the database by it's name
-		$user = self::getUserByName($username);
+		$user = self::getUserByName($username, $faceId);
 
 		// user was found and the password is incorrect
 		if ($user and $user->getPassword() !== $password)

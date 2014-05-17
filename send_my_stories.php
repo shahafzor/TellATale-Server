@@ -13,15 +13,21 @@ function getPassword()
 	return $_GET['password'];
 }
 
+function getFacebookId()
+{
+	return $_GET['facebookId'] ? $_GET['facebookId'] : 0;
+}
+
 // Script starts here
-$username = getUserName($xmlObj);
-$password = getPassword($xmlObj);
+$username = getUserName();
+$password = getPassword();
+$facebookId = getFacebookId();
 if (!InputCheck::validateCredentials($username, $password))
 {
 	exitError();
 }
 
-$user = UserTable::logIn($username, $password);
+$user = UserTable::logIn($username, $password, $facebookId);
 if (!$user)
 {
 	exitError(STATUS_ERROR_CREDENTIALS);

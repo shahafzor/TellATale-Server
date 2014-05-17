@@ -5,6 +5,7 @@ class User
 	private $Password;
 	private $Permission = 0;
 	private $Id;
+	private $FacebookId = 0;
 	private $Languages = array();
 	
 	public function __construct($username, $password, $permission, $id)
@@ -16,7 +17,6 @@ class User
 		{
 			$this->Id = $id;
 		}
-		
 	}
 	
 	public function getPassword()
@@ -62,6 +62,16 @@ class User
 	public function addLanguage($newLanguage)
 	{
 		$this->Languages[] = $newLanguage;
+	}
+	
+	public function setFacebookId($facebookId)
+	{
+		$this->FacebookId = $facebookId;
+	}
+	
+	public function getFacebookId()
+	{
+		return $this->FacebookId;
 	}
 }
 ?>

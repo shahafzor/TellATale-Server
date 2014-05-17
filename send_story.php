@@ -16,6 +16,11 @@ function getPassword()
 	return $_GET['password'];
 }
 
+function getFacebookId()
+{
+	return $_GET['facebookId'] ? $_GET['facebookId'] : 0;
+}
+
 function getAction()
 {
 	return $_GET['action'];
@@ -27,15 +32,16 @@ function getStory()
 }
 
 // Script starts here
-$username = getUserName($xmlObj);
-$password = getPassword($xmlObj);
-$action = (int)getAction($xmlObj);
+$username = getUserName();
+$password = getPassword();
+$facebookId = getFacebookId();
+$action = (int)getAction();
 if (!InputCheck::validateCredentials($username, $password))
 {
 	exitError(STATUS_ILLEGAL_INPUT);
 }
 
-$user = UserTable::logIn($username, $password);
+$user = UserTable::logIn($username, $password, $facebookId);
 if (!$user)
 {
 	exitError(STATUS_ERROR_CREDENTIALS);

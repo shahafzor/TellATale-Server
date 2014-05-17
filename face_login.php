@@ -6,6 +6,7 @@ include_once 'classes/InputCheck.php';
 // Script starts here
 $username = $_GET['username'];
 $password = $_GET['password'];
+$faceId = $_GET['password'];
 
 // check input
 if (!InputCheck::validateCredentials($username, $password))
@@ -15,13 +16,14 @@ if (!InputCheck::validateCredentials($username, $password))
 
 // create a user object
 $user = new User($username, $password, PERMISION_BASIC);
+$user->setFacebookId($faceId);
 
 // add the user to the database
 $status = addUser($user);
 
 if ($status == STATUS_DUPLICATE_USER)
 {
-	$user = UserTable::logIn($username, $password);
+	$user = UserTable::logIn($username, $password, $faceId);
 	
 	if ($user) // successfull login
 	{
