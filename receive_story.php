@@ -12,16 +12,6 @@ include_once 'common.php';
 include_once 'storyXml.php';
 include_once 'classes/InputCheck.php';
 
-function getUserName($xmlObj)
-{
-	return (string)$xmlObj->story_segment->user_name;
-}
-
-function getPassword($xmlObj)
-{
-	return (string)$xmlObj->story_segment->password;
-}
-
 // Script starts here:
 // load the received story segment xml file as an xml object
 $postdata = file_get_contents("php://input");
@@ -33,14 +23,15 @@ if (!$xmlObj)
 	exitError();
 }
 
-$username = getUserName($xmlObj);
-$password = getPassword($xmlObj);
+$username = getUserName();
+$password = getPassword();
+$faceId = getFacebookId();
 if (!InputCheck::validateCredentials($username, $password))
 {
 	exitError();
 }
 
-$user = UserTable::logIn($username, $password);
+$user = UserTable::logIn($username, $password, $faceId);
 if (!$user)
 {
 	exitError(STATUS_ERROR_CREDENTIALS);

@@ -83,4 +83,19 @@ function addUser($user)
 			return  STATUS_ERROR;
 	}
 }
+
+function getUserName()
+{
+	return $_GET['username'];
+}
+
+function getPassword()
+{
+	return $_GET['password'];
+}
+
+function getFacebookId()
+{
+	return $_GET['facebookId'] ? $_GET['facebookId'] : 0;
+}
 ?>

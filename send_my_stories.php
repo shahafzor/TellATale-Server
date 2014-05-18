@@ -3,21 +3,6 @@ include_once 'common.php';
 include_once 'storyXml.php';
 include_once 'classes/InputCheck.php';
 
-function getUserName()
-{
-	return $_GET['username'];
-}
-
-function getPassword()
-{
-	return $_GET['password'];
-}
-
-function getFacebookId()
-{
-	return $_GET['facebookId'] ? $_GET['facebookId'] : 0;
-}
-
 // Script starts here
 $username = getUserName();
 $password = getPassword();

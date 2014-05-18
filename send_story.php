@@ -6,21 +6,6 @@ include_once 'classes/InputCheck.php';
 define ('REJECT_STORY',	2);
 define ('REPLACE_STORY',3);
 
-function getUserName()
-{
-	return $_GET['username'];
-}
-
-function getPassword()
-{
-	return $_GET['password'];
-}
-
-function getFacebookId()
-{
-	return $_GET['facebookId'] ? $_GET['facebookId'] : 0;
-}
-
 function getAction()
 {
 	return $_GET['action'];
